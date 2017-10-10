@@ -171,4 +171,3 @@ gap_asia %>%
 END OF NUMERICAL SUMMARIES
 
 ---
-
