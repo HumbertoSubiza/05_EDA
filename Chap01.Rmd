@@ -11,24 +11,31 @@ library(tidyverse)
 library(stringr)
 ```
 
+---
 
 ### Introduction
 
 #### Obtaining counts
  
 ```{r, message=FALSE}
- comics <- read_csv("comics.csv")
+# reading data
+comics <- read_csv("comics.csv")
+# setting the column names
 names(comics) <- c("page_id","name","urlslug","id","align","eye","hair","sex","gsm","alive","appearances","first_appear","publisher" )
+# some tidying..
 comics$id <- str_replace(comics$id, " Identity", "")
 comics$align <- str_replace(comics$align, "Characters", "")
 comics$sex <- str_replace(comics$sex, "Characters", "")
 comics$alive <- str_replace(comics$alive, "Characters", "")
+# Simplify display format
+options(scipen = 999, digits = 3) 
 
-options(scipen = 999, digits = 3) # Simplify display format
-
+# tab to explore the relation
  tab_cnt <- table(comics$id, comics$align)
  tab_cnt
 ```
+
+---
 
 #### Obtaining proportions
  
@@ -43,9 +50,7 @@ options(scipen = 999, digits = 3) # Simplify display format
 
 #### Conditional proportions
  
- r
- 
- 
+---
  
 ```{r}
 prop.table(tab_cnt, 1) # Condition on the rows (i.e. rows sum to 1)
@@ -56,6 +61,7 @@ prop.table(tab_cnt, 2)#  Condition on the columns (i.e. columns sum to 1)
 
  To obtain proportions with ggplot, just add on the geom_bar(position = "fill)
 
+---
 
 #### Bar chart expectations
 
@@ -76,6 +82,7 @@ Plot 2
 
 Plot 3
 
+---
 
 ####Contingency table review
 
@@ -101,7 +108,7 @@ The dataset has been loaded into your workspace as comics.
 
 5- Print the first rows of the data comics
 
-r
+---
 
 ```{r}
 # Check levels of align
@@ -113,7 +120,6 @@ levels(comics$sex)
 # Create a 2-way contingency table
 table(comics$align, comics$sex)
 ```
-
 
 ---
 
@@ -150,7 +156,6 @@ comics <- comics %>%
 ```
 
 ---
-
 
 ####Side-by-side barcharts
 
@@ -204,7 +209,7 @@ prop.table(tab)     # Joint proportions
 prop.table(tab, 2)  # Conditional on columns
 ```
 
-
+---
 
 Go ahead and run it in the console. Approximately what proportion of all
 female characters are good?
@@ -218,6 +223,7 @@ female characters are good?
 
  4- 51% !
 
+---
 
 #### Counts vs. proportions (2)
 
@@ -246,7 +252,7 @@ To demonstrate this difference, you'll construct two barcharts in this exercise:
 ```
 
 
- 
+--- 
 
 By adding position = "fill" to geom_bar(), you are saying you want the bars to
 fill the entire height of the plotting window, thus displaying proportions and
@@ -259,6 +265,7 @@ library(gapminder) # for use of gapminder data (ch3.2)
 library(openintro) # for use of email data (ch4)
 ```
 
+---
 
 #### Marginal barchart
 
@@ -284,7 +291,7 @@ ggplot(comics, aes(x =align)) +
   geom_bar()
 ```
 
- 
+---
 
 #### Conditional barchart
 
@@ -338,9 +345,6 @@ ggplot(pies, aes(x = flavor)) +
   geom_bar(fill = "chartreuse") + 
   theme(axis.text.x = element_text(angle = 90))
   
----
-
-
 ---
 
 #### Plot selection
