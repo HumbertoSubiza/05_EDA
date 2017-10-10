@@ -1,0 +1,378 @@
+---
+title: "AED - Datacamp - Chap01"
+author: "WHSP"
+date: "5 de outubro de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
+library(tidyverse)
+library(stringr)
+```
+
+
+### Introduction
+
+#### Obtaining counts
+ 
+```{r, message=FALSE}
+ comics <- read_csv("~/R/Data camp/05 EAD/comics.csv")
+names(comics) <- c("page_id","name","urlslug","id","align","eye","hair","sex","gsm","alive","appearances","first_appear","publisher" )
+comics$id <- str_replace(comics$id, " Identity", "")
+comics$align <- str_replace(comics$align, "Characters", "")
+comics$sex <- str_replace(comics$sex, "Characters", "")
+comics$alive <- str_replace(comics$alive, "Characters", "")
+
+options(scipen = 999, digits = 3) # Simplify display format
+
+ tab_cnt <- table(comics$id, comics$align)
+ tab_cnt
+```
+
+#### Obtaining proportions
+ 
+```{r}
+ prop.table(tab_cnt)
+
+# summation must be 1
+ sum(prop.table(tab_cnt))
+```
+
+---
+
+#### Conditional proportions
+ 
+ r
+ 
+ 
+ 
+```{r}
+prop.table(tab_cnt, 1) # Condition on the rows (i.e. rows sum to 1)
+
+prop.table(tab_cnt, 2)#  Condition on the columns (i.e. columns sum to 1)
+
+```
+
+ To obtain proportions with ggplot, just add on the geom_bar(position = "fill)
+
+
+#### Bar chart expectations
+
+Suppose you've asked 30 people, some young, some old, what their preferred flavor
+of pie is: apple or pumpkin.
+
+That data could be summarized in a side-by-side barchart.
+Here are three possibilities for how it might look.
+
+Which one of the barcharts shows no relationship between age and flavor?
+In other words, which shows that pie preference is the same for both young and old?
+
+Possible Answers:
+
+Plot 1 !
+
+Plot 2
+
+Plot 3
+
+
+####Contingency table review
+
+In this chapter you'll continue working with the comics dataset introduced in
+the video. This is a collection of characteristics on all of the superheroes
+created by Marvel and DC comics in the last 80 years.
+
+Let's start by creating a contingency table, which is a useful way to represent
+the total counts of observations that fall into each combination of the levels
+of categorical variables.
+
+**Instructions**
+
+The dataset has been loaded into your workspace as comics.
+
+1- Type the name of the dataset to look at the rows and columns of the dataset.
+
+2- View the levels() that the align variable can take.
+
+3- View the levels() that the gender variable can take.
+
+4- Create a contingency table of the same two variables.
+
+5- Print the first rows of the data comics
+
+r
+
+```{r}
+# Check levels of align
+levels(comics$align)
+
+# Check the levels of gender
+levels(comics$sex)
+
+# Create a 2-way contingency table
+table(comics$align, comics$sex)
+```
+
+
+---
+
+#### Dropping levels
+
+The contingency table from the last exercise revealed that there are some levels
+that have very low counts.
+To simplify the analysis, it often helps to drop such levels.
+
+In R, this requires two steps: first filtering out any rows with the levels that
+have very low counts, then removing these levels from the factor variable with
+droplevels().
+This is because the droplevels() function would keep levels that have just 1 or
+2 counts; it only drops levels that don't exist in a dataset.
+
+**Instructions**
+
+1- Load the dplyr package.
+
+2- Print tab to find out which level of align has the fewest total entries.
+
+3- Use filter() to filter out all rows of comics with that level, then drop the
+unused level with droplevels(). Save the simplifed dataset over the old one as
+comics.
+
+```{r, message=FALSE}
+# Load dplyr
+library(dplyr)
+
+#Remove align level
+comics <- comics %>%
+  filter(align != "Reformed Criminals") %>%
+  droplevels()
+```
+
+---
+
+
+####Side-by-side barcharts
+
+While a contingency table represents the counts numerically, it's often more
+useful to represent them graphically.
+
+Here you'll construct two side-by-side barcharts of the comics data.
+This shows that there can often be two or more options for presenting the same
+data. Passing the argument position = "dodge" to geom_bar() says that you want
+a side-by-side (i.e. not stacked) barchart.
+
+**Instructions**
+
+1- Create a side-by-side barchart with align on the x-axis and gender as the fill
+aesthetic.
+
+2- Create another side-by-side barchart with gender on the x-axis and align as the
+fill aesthetic. Rotate the axis labels 90 degrees to help readability.
+
+
+```{r}
+
+# Load ggplot2
+library(ggplot2)
+
+# Create side-by-side barchart of gender by alignment
+ggplot(comics, aes(x = align, fill = sex)) +
+  geom_bar(position = "dodge")
+
+# Create side-by-side barchart of alignment by gender
+ggplot(comics, aes(x = sex, fill =align)) +
+  geom_bar(position = "dodge") +
+  theme(axis.text.x = element_text(angle = 90))
+  
+```
+
+ 
+---
+
+####Conditional proportions
+
+The following code generates tables of joint and conditional proportions, respectively:
+
+```{r}
+tab <- table(comics$align, comics$sex)
+
+options(scipen = 999, digits = 3) # Print fewer digits
+
+prop.table(tab)     # Joint proportions
+
+prop.table(tab, 2)  # Conditional on columns
+```
+
+
+
+Go ahead and run it in the console. Approximately what proportion of all
+female characters are good?
+ Possible Answers
+
+ 1- 44%
+
+ 2- 1.3%
+
+ 3- 13%
+
+ 4- 51% !
+
+
+#### Counts vs. proportions (2)
+
+Bar charts can tell dramatically different stories depending on whether they
+represent counts or proportions and, if proportions, what the proportions are
+conditioned on.
+
+To demonstrate this difference, you'll construct two barcharts in this exercise:
+ one of counts and one of proportions.
+
+**Instructions**
+ 
+1- Create a stacked barchart of gender counts with align on the x-axis.
+
+2- Create a stacked barchart of gender proportions with align on the x-axis by
+ setting the position argument to geom_bar() equal to "fill".
+
+```{r}
+# Plot of gender by align
+ ggplot(comics, aes(x = align, fill = sex)) +
+   geom_bar()
+
+ # Plot proportion of gender, conditional on align
+ ggplot(comics, aes(x = align, fill = sex)) +
+  geom_bar(position = "fill")
+```
+
+
+ 
+
+By adding position = "fill" to geom_bar(), you are saying you want the bars to
+fill the entire height of the plotting window, thus displaying proportions and
+not raw counts.
+
+```{r, message=FALSE}
+library(dplyr) # for use of dplyr functions such as glimpse(), mutate(), and filter()
+library(ggplot2)#  for use of ggplot2 functions such ggplot()
+library(gapminder) # for use of gapminder data (ch3.2)
+library(openintro) # for use of email data (ch4)
+```
+
+
+#### Marginal barchart
+
+If you are interested in the distribution of alignment of all superheroes, it 
+makes sense to construct a barchart for just that single variable.
+
+You can improve the interpretability of the plot, though, by implementing some 
+sensible ordering. Superheroes that are "Neutral" show an alignment between "Good" and "Bad", so it makes sense to put that bar in the middle.
+
+**Instructions**
+
+1- Reorder the levels of align using the factor() function so that printing them 
+reads "Bad", "Neutral", then "Good".
+
+2- Create a barchart of counts of the align variable.
+
+```{r}
+# Change the order of the levels in align
+comics$align <- factor(comics$align, levels = c("Bad Characters", "Neutral Characters","Good Characters"))
+
+# Create plot of align
+ggplot(comics, aes(x =align)) + 
+  geom_bar()
+```
+
+ 
+
+#### Conditional barchart
+
+Now, if you want to break down the distribution of alignment based on gender, 
+you're looking for conditional distributions.
+
+You could make these by creating multiple filtered datasets (one for each gender) 
+or by faceting the plot of alignment based on gender. 
+
+As a point of comparison, we've provided your plot of the marginal distribution 
+of alignment from the last exercise.
+
+**Instructions**
+
+1- Create a barchart of align faceted by sex.
+
+```{r}
+# Plot of alignment broken down by gender
+ggplot(comics, aes(x = align)) + 
+  geom_bar() +
+  facet_wrap(~ sex)
+
+```
+
+---
+
+#### Improve piechart
+
+The piechart is a very common way to represent the distribution of a single 
+categorical variable, but they can be more difficult to interpret than barcharts.
+
+This is a piechart of a dataset called pies that contains the favorite pie 
+flavors of 98 people. Improve the representation of these data by constructing 
+a barchart that is ordered in descending order of count.
+
+Instructions
+
+1- Use the code provided to reorder the levels of flavor so that they're in 
+descending order by count.
+
+2- Create a barchart of flavor and orient the labels vertically so that they're 
+easier to read. The default coloring may look drab by comparison, so change the 
+fill of the bars to "chartreuse".
+
+ Put levels of flavor in decending order
+lev <- c("apple", "key lime", "boston creme", "blueberry", "cherry", "pumpkin", "strawberry")
+pies$flavor <- factor(pies$flavor, levels = lev)
+
+ Create barchart of flavor
+ggplot(pies, aes(x = flavor)) + 
+  geom_bar(fill = "chartreuse") + 
+  theme(axis.text.x = element_text(angle = 90))
+  
+---
+
+
+---
+
+#### Plot selection
+
+Consider two other columns in the cars dataset: city_mpg and width. Which is the most appropriate plot for displaying the important features of their distributions? Remember, both density plots and box plots display the central tendency and spread of the data, but the box plot is more robust to outliers.
+
+**Instructions**
+
+Use density plots or box plots to construct the following visualizations. For each variable, try both plots and submit the one that is better at capturing the important structure.
+
+1- Display the distribution of city_mpg.
+
+2- Display the distribution of width.
+
+```{r}
+cars <- read_csv("cars.csv")
+# Create plot of city_mpg
+cars %>%
+  ggplot(aes( x = 1, y = city_mpg)) +
+  geom_boxplot()
+
+# Create plot of width
+cars %>%
+  ggplot(aes( x  = width)) +
+  geom_density()
+```
+
+Because the city_mpg variable has a much wider range with its outliers, it's best to display its distribution as a box plot.
+
+---
+
+END OF CHAPTER 01
+
+---
+cars <- read_csv("~/R/Data camp/05 EAD/cars.csv")

@@ -1,0 +1,273 @@
+---
+title: "AED - Datacamp - Chap02"
+author: "WHSP"
+date: "9 de outubro de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
+library(tidyverse)
+library(stringr)
+```
+
+### Chapter 02
+
+
+#### Faceted histogram
+
+In this chapter, you'll be working with the cars dataset, which records characteristics on all of the new models of cars for sale in the US in a certain year. You will investigate the distribution of mileage across a categorial variable, but before you get there, you'll want to familiarize yourself with the dataset.
+
+---
+
+**Instructions**
+
+1- View the size of the data and the variable types using str().
+
+2- Plot a histogram of city_mpg faceted by suv, a logical variable indicating whether the car is an SUV or not.
+
+---
+
+```{r}
+cars <- read_csv("~/R/Data camp/05 EAD/cars.csv",
+                 col_types = cols(city_mpg   = col_integer(),
+                                  horsepwr   = col_integer(), 
+                                  hwy_mpg    = col_integer(),
+                                  length     = col_integer(), 
+                                  weight     = col_integer(),
+                                  wheel_base = col_integer(), 
+                                  width      = col_integer()))
+
+str(cars)
+
+# Create faceted histogram
+ggplot(cars, aes(x = city_mpg)) +
+  geom_histogram() +
+  facet_wrap(~ suv)
+
+```
+
+---
+
+In this exercise, you faceted by the suv variable, but it's important to note that you can facet a plot by any categorical variable using facet_wrap().
+
+---
+
+#### Boxplots and density plots
+
+The mileage of a car tends to be associated with the size of its engine (as measured by the number of cylinders). To explore the relationship between these two variables, you could stick to using histograms, but in this exercise you'll try your hand at two alternatives: the box plot and the density plot.
+
+---
+
+**Instructions**
+
+A quick look at unique(cars$ncyl) shows that there are more possible levels of ncyl than you might think. Here, restrict your attention to the most common levels.
+
+1- Filter cars to include only cars with 4, 6, or 8 cylinders and save the result as common_cyl. The %in% operator may prove useful here.
+
+2- Create side-by-side box plots of city_mpg separated out by ncyl.
+
+3- Create overlaid density plots of city_mpg colored by ncyl.
+
+```{r}
+# Filter cars with 4, 6, 8 cylinders
+common_cyl <- filter(cars, ncyl %in% c(4,6,8))
+
+# Create box plots of city mpg by ncyl
+ggplot(common_cyl, aes(x = as.factor(ncyl), y = city_mpg)) +
+  geom_boxplot()
+
+# Create overlaid density plots for same data
+ggplot(common_cyl, aes(x = city_mpg, fill = as.factor(ncyl))) +
+  geom_density(alpha = .3)
+```
+
+---
+
+#### Compare distribution via plots
+
+Which of the following interpretations of the plot is not valid?
+
+Possible Answers
+1- The highest mileage cars have 4 cylinders.
+
+2- The typical 4 cylinder car gets better mileage than the typical 6 cylinder car, which gets better mileage than the typical 8 cylinder car.
+
+3- Most of the 4 cylinder cars get better mileage than even the most efficient 8 cylinder cars.
+
+4- The variability in mileage of 8 cylinder cars is similar to the variability in mileage of 4 cylinder cars.!!!
+
+---
+
+#### Marginal and conditional histograms
+
+Now, turn your attention to a new variable: horsepwr. The goal is to get a sense of the marginal distribution of this variable and then compare it to the distribution of horsepower conditional on the price of the car being less than $25,000.
+
+You'll be making two plots using the "data pipeline" paradigm, where you start with the raw data and end with the plot.
+
+---
+
+**Instructions**
+
+1- Create a histogram of the distribution of horsepwr across all cars and add an appropriate title. Start by piping in the raw dataset.
+
+2- Create a second histogram of the distribution of horsepower, but only for those cars that have an msrp less than $25,000. Keep the limits of the x-axis so that they're similar to that of the first plot, and add a descriptive title.
+
+
+```{r}
+# Create hist of horsepwr
+cars %>%
+  ggplot(aes(horsepwr)) +
+  geom_histogram() +
+  ggtitle("Horse power 4 all cars")
+
+# Create hist of horsepwr for affordable cars
+cars %>% 
+  filter(msrp <25000) %>%
+  ggplot(aes(horsepwr)) +
+  geom_histogram() +
+  xlim(c(90, 550)) +
+  ggtitle("Horse power 4 cars less than $ 25,000")
+```
+
+---
+
+####Marginal and conditional histograms interpretation
+
+Observe the two histograms in the plotting window and decide which of the following is a valid interpretation.
+
+**Possible Answers**
+
+- Cars with around 300 horsepower are more common than cars with around 200 horsepower.
+
+- The highest horsepower car in the less expensive range has just under 250 horsepower.
+
+- Most cars under $25,000 vary from roughly 100 horsepower to roughly 350 horsepower.
+
+---
+
+#### Three binwidths
+
+Before you take these plots for granted, it's a good idea to see how things change when you alter the binwidth. The binwidth determines how smooth your distribution will appear: the smaller the binwidth, the more jagged your distribution becomes. It's good practice to consider several binwidths in order to detect different types of structure in your data.
+
+---
+
+**Instructions**
+
+Create the following three plots, adding a title to each to indicate the binwidth used:
+
+1- A histogram of horsepower (i.e. horsepwr) with a binwidth of 3.
+
+2- A second histogram of horsepower with a binwidth of 30.
+
+3- A third histogram of horsepower with a binwidth of 60.
+
+```{r}
+# Create hist of horsepwr with binwidth of 3
+cars %>%
+  ggplot(aes(horsepwr)) +
+  geom_histogram(binwidth = 3) +
+  ggtitle("Horse power bindwith = 3")
+
+# Create hist of horsepwr with binwidth of 30
+cars %>%
+  ggplot(aes(horsepwr)) +
+  geom_histogram(binwidth = 30) +
+  ggtitle("Horse power bindwith = 30")
+
+# Create hist of horsepwr with binwidth of 60
+cars %>%
+  ggplot(aes(horsepwr)) +
+  geom_histogram(binwidth = 60) +
+  ggtitle("Horse power bindwith = 60")
+
+```
+
+---
+
+####Three binwidths interpretation
+
+What feature is present in Plot A that's not found in B or C?
+
+**Possible Answers**
+
+1- The most common horsepower is around 200.
+
+2- There is a tendency for cars to have horsepower right at 200 or 300 horsepower.!
+
+3- There is a second mode around 300 horsepower.
+
+---
+
+### BOXPLOT
+
+####Box plots for outliers
+
+In addition to indicating the center and spread of a distribution, a box plot provides a graphical means to detect outliers. You can apply this method to the msrp column (manufacturer's suggested retail price) to detect if there are unusually expensive or cheap cars.
+
+---
+
+**Instructions**
+
+1- Construct a box plot of msrp.
+
+2- Exclude the largest 3-5 outliers by filtering the rows to retain cars less than $100,000. Save this reduced dataset as cars_no_out.
+
+3- Construct a similar box plot of msrp using this reduced dataset. Compare the two plots.
+
+----
+
+```{r}
+# Construct box plot of msrp
+cars %>%
+  ggplot(aes(x = 1, y = msrp)) +
+  geom_boxplot()
+
+# Exclude outliers from data
+cars_no_out <- cars %>%
+  filter(msrp < 100000)
+
+# Construct box plot of msrp using the reduced dataset
+cars_no_out %>%
+  ggplot(aes(x = 1 , y = msrp)) +
+  geom_boxplot()
+```
+
+---
+
+#### variable plot
+
+Faceting is a valuable technique for looking at several conditional distributions at the same time. If the faceted distributions are laid out in a grid, you can consider the association between a variable and two others, one on the rows of the grid and the other on the columns.
+
+**Instructions**
+
+usin common_cyl, which you created to contain only cars with 4, 6, or 8 cylinders:
+
+1- Create a histogram of hwy_mpg faceted on both ncyl and suv.
+
+2- Add a title to your plot to indicate what variables are being faceted on.
+
+```{r}
+# Facet hists using hwy mileage and ncyl
+common_cyl %>%
+  ggplot(aes(x = hwy_mpg)) +
+  geom_histogram() +
+  facet_grid(ncyl ~ suv) +
+  ggtitle("Hwy per mpg faceted")
+```
+
+---
+
+**Interpret 3 var plot**
+
+Which of the following interpretations of the plot is valid?
+
+**Possible Answers**
+
+1- Across both SUVs and non-SUVs, mileage tends to decrease as the number of cylinders increases.
+
+2- There are more SUVs than non-SUVs across all cylinder types.
+
+3- There is more variability in 6-cylinder non-SUVs than in any other type of car.
+
+
