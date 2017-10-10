@@ -29,7 +29,7 @@ In this chapter, you'll be working with the cars dataset, which records characte
 ---
 
 ```{r}
-cars <- read_csv("~/R/Data camp/05 EAD/cars.csv",
+cars <- read_csv("cars.csv",
                  col_types = cols(city_mpg   = col_integer(),
                                   horsepwr   = col_integer(), 
                                   hwy_mpg    = col_integer(),
