@@ -37,8 +37,8 @@ cars <- read_csv("cars.csv",
                                   weight     = col_integer(),
                                   wheel_base = col_integer(), 
                                   width      = col_integer()))
-
-str(cars)
+# commented to save pages!!
+# str(cars)
 
 # Create faceted histogram
 ggplot(cars, aes(x = city_mpg)) +
@@ -69,7 +69,7 @@ A quick look at unique(cars$ncyl) shows that there are more possible levels of n
 
 3- Create overlaid density plots of city_mpg colored by ncyl.
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 # Filter cars with 4, 6, 8 cylinders
 common_cyl <- filter(cars, ncyl %in% c(4,6,8))
 
@@ -114,7 +114,7 @@ You'll be making two plots using the "data pipeline" paradigm, where you start w
 2- Create a second histogram of the distribution of horsepower, but only for those cars that have an msrp less than $25,000. Keep the limits of the x-axis so that they're similar to that of the first plot, and add a descriptive title.
 
 
-```{r}
+```{r, warning=FALSE}
 # Create hist of horsepwr
 cars %>%
   ggplot(aes(horsepwr)) +
@@ -235,7 +235,7 @@ cars_no_out %>%
 
 ---
 
-#### variable plot
+#### Variable plot
 
 Faceting is a valuable technique for looking at several conditional distributions at the same time. If the faceted distributions are laid out in a grid, you can consider the association between a variable and two others, one on the rows of the grid and the other on the columns.
 
@@ -270,4 +270,7 @@ Which of the following interpretations of the plot is valid?
 
 3- There is more variability in 6-cylinder non-SUVs than in any other type of car.
 
+---
+
+END of CHAPTER
 
