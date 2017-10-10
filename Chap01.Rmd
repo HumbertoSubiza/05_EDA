@@ -17,7 +17,7 @@ library(stringr)
 #### Obtaining counts
  
 ```{r, message=FALSE}
- comics <- read_csv("~/R/Data camp/05 EAD/comics.csv")
+ comics <- read_csv("comics.csv")
 names(comics) <- c("page_id","name","urlslug","id","align","eye","hair","sex","gsm","alive","appearances","first_appear","publisher" )
 comics$id <- str_replace(comics$id, " Identity", "")
 comics$align <- str_replace(comics$align, "Characters", "")
@@ -375,4 +375,4 @@ Because the city_mpg variable has a much wider range with its outliers, it's bes
 END OF CHAPTER 01
 
 ---
-cars <- read_csv("~/R/Data camp/05 EAD/cars.csv")
+
